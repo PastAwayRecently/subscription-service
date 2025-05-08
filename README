@@ -1,0 +1,120 @@
+# Subscription Service
+
+Microservice for managing users and their digital service subscriptions (Netflix, Spotify, etc.)
+
+## Features
+
+- **User Management**:
+  - Full CRUD operations (Create, Read, Update, Delete)
+  - Data validation (email, name)
+
+- **Subscription Management**:
+  - Add/remove user subscriptions
+  - View active subscriptions
+  - Monthly cost tracking
+
+- **API Documentation**:
+  - Interactive Swagger UI
+  - Request/response examples
+
+## Technologies
+
+- **Backend**:
+  - Java 17
+  - Spring Boot 3.2
+  - Spring Data JPA
+  - Lombok
+
+- **Database**:
+  - PostgreSQL 15
+  - Hibernate ORM
+
+- **Infrastructure**:
+  - Docker
+  - Docker Compose
+
+## Getting Started
+
+### Prerequisites
+- Installed:
+  - JDK 17+
+  - Maven
+  - Docker + Docker Compose
+
+### 1. Build and Run (Recommended)
+```bash
+# Build JAR file
+./mvnw clean package -DskipTests
+
+# Start containers
+docker-compose up -d
+
+Application will be available at: [http://localhost:8080](http://localhost:8080)
+(Highly unrecommended, no UI yet)
+
+# (Better) Go to
+http://localhost:8080/swagger-ui/index.html
+
+```
+
+
+### 2. Run Without Docker
+```bash
+# Configure DB in application.properties:
+# spring.datasource.url=jdbc:postgresql://localhost:5432/subscription_db
+# spring.datasource.username=admin
+# spring.datasource.password=secret
+
+./mvnw spring-boot:run
+```
+
+### 3. Test Mode (Skip tests because db in Docker container, no tests was in requirement, I can write is it's necessary)
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=test
+```
+
+## API Endpoints
+
+Available API methods (full documentation in Swagger UI):
+- `POST /api/users` - Create user
+- `GET /api/users/{id}` - Get user
+- `POST /api/users/{userId}/subscriptions` - Add subscription
+- `GET /api/users/{userId}/subscriptions` - List subscriptions
+
+Swagger UI: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+
+## Docker Commands
+
+| Command | Description |
+|---------|----------|
+| `docker-compose up -d` | Start services |
+| `docker-compose down` | Stop services |
+| `docker-compose logs -f app` | View logs |
+| `docker-compose restart app` | Restart application |
+
+## Database Structure
+
+    USER {
+        bigint id PK
+        varchar name
+        varchar email
+    }
+    SUBSCRIPTION {
+        bigint id PK
+        varchar service_name
+        numeric monthly_fee
+        bigint user_id FK
+    }
+```
+
+## Troubleshooting
+
+1. **DB Connection Issues**:
+   - Check PostgreSQL logs: `docker logs subscription_postgres`
+   - Ensure clean volume: `docker-compose down -v`
+
+2. **Migration Problems**:
+   - To reset DB: remove `subscription-service_postgres_data` volume
+
+3. **Failing Tests**:
+   - Run with logs: `./mvnw test -Dtest=YourTestClass`
